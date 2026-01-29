@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <title>My Heart 'M</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/images/icon.jpeg">
+</head>
+
+<body>
+    <svg width="0" height="0" style="position:absolute; z-index: -1;">
+        <defs>
+            <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
+                <path
+                    d="M0.5,1 C0.5,1,0,0.7,0,0.3 A0.25,0.25,0,0,1,0.5,0.3 A0.25,0.25,0,0,1,1,0.3 C1,0.7,0.5,1,0.5,1 Z" />
+            </clipPath>
+        </defs>
+    </svg>
+
+    <div id="lockScreen" class="screen active">
+        <div class="hearts-background"></div>
+        <div class="heart-frame">
+            <img src="assets/images/heart.jpeg" alt="Anı Fotoğrafı" class="profile-image">
+        </div>
+        <p class="start-text">Seviyorum Senii</p>
+        <form id="nameForm" onsubmit="return false;">
+            <input type="text" id="nameInput" placeholder="'Merve or Furkan'" required autocomplete="off"
+                maxlength="15">
+        </form>
+        <div id="startInstructions">
+            <div class="initial-prompt">
+                <div class="tap-animation">
+                    <div class="circle c1"></div>
+                    <div class="circle c2"></div>
+                    <div class="circle c3"></div>
+                </div>
+            </div>
+            <div class="tap-to-start">
+                <p>Başlamak için ekrana dokun 🤍</p>
+            </div>
+        </div>
+        <div class="loader"></div>
+    </div>
+
+    <div id="gameScreen" class="screen">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="loveMessageOverlay">
+            <div class="message-content">
+                <span class="pulse-text">Seviyorum Seni <br> ❤️</span>
+            </div>
+        </div>
+
+        <div id="tutorialOverlay">
+            <div class="tutorial-box">
+                <h3>Nasıl Oynanır?</h3>
+                <ul class="legend-list">
+                    <li>❤️ <span><b>Kalp`M:</b> +1 Puan (Düşerse can gider)</span></li>
+                    <li>💛 <span><b>Altın Kalp:</b> Canı 3'e tamamlar</span></li>
+                    <li>💙 <span><b>Buz Kalp:</b> Zamanı yavaşlatır</span></li>
+                    <li>🌈 <span><b>Gökkuşağı kalp:</b> Ekrandaki tüm kalplerimi temizler</span></li>
+                    <li>💔 <span><b>Kırık Kalp:</b> Tıklama! (Yoksa -1 canın gider)</span></li>
+                    <li>🖤 <span><b>Siyah Kalp:</b> Tıklarsan -50 Puan! (Bırak düşsün)</span></li>
+                    <li>💌 <span><b>Mektup:</b> +50 Puan ve bir Sürpriz!</span></li>
+                </ul>
+
+                <div class="start-btn-wrapper" id="finalStartBtn">
+                    <button class="custom-play-btn">
+                        <img src="assets/images/play_icon.png" alt="Başla">
+                    </button>
+                </div>
+                <p class="hint-text">Başlamak için tıkla </p>
+            </div>
+        </div>
+
+        <div id="highScoreContainer">
+            <span class="high-score" id="furkanHighScore">0</span>
+            <div class="profile-pic-container" id="profileFurkan">
+                <img src="assets/images/crown.png" class="crown-icon">
+                <img src="assets/profiles/furkan.png" class="profile-pic" alt="Furkan Profil">
+            </div>
+            <div class="profile-pic-container" id="profileMerve">
+                <img src="assets/images/crown.png" class="crown-icon">
+                <img src="assets/profiles/merve.png" class="profile-pic" alt="Merve Profil">
+            </div>
+            <span class="high-score" id="merveHighScore">0</span>
+        </div>
+
+        <div class="score-container">
+            <div class="score-label">SKOR</div>
+            <div id="scoreValue">0</div>
+        </div>
+        <div class="lives-container" id="livesContainer">
+            <span id="livesValue">3</span> ❤️
+        </div>
+
+        <div class="controls-left-group">
+            <div id="pauseControl" class="pause-control">
+                <div class="pause-icon"></div>
+            </div>
+
+            <div id="turboBtn" class="turbo-btn">
+                <span class="fire-icon">❤️‍🔥​</span>
+            </div>
+        </div>
+
+        <div id="pauseOverlay" class="screen">
+            <div class="pause-box">
+                <button id="resumeBtn" class="resume-custom-btn">
+                    <img src="assets/images/startstop.jpeg" alt="Devam Et">
+
+                    <div class="play-triangle-wrapper">
+                        <div class="play-triangle"></div>
+                    </div>
+                </button>
+                <p></p>
+            </div>
+        </div>
+
+
+
+
+        <div class="music-control" id="musicControl">
+            <img src="assets/images/record-player.png" alt="Plak" class="record-icon">
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="screen">
+        <div class="game-over-box">
+            <div class="restart-icon-wrapper">
+                <svg viewBox="0 0 100 100" class="restart-svg">
+                    <path d="M 80 50 A 30 30 0 1 1 70.7 28.7" fill="none" stroke="white" stroke-width="8"
+                        stroke-linecap="round" />
+                    <polyline points="60,30 71,28 73,17" fill="none" stroke="white" stroke-width="8"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <h2>Tekrar denemek ister misin? 🥹</h2>
+            <p>Yüzmeye devam et Bitanemmm'M</p>
+        </div>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="assets/audio/background_music.mp3" type="audio/mpeg">
+        Tarayıcınız ses etiketini desteklemiyor.
+    </audio>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="script.js" defer></script>
+</body>
+
+</html>
