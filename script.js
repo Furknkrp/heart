@@ -58,16 +58,16 @@ const energyBarFill = document.getElementById('energyBarFill');
 // Turbo Sistemi Ayarları
 let turboEnergy = 0;
 const MAX_TURBO_ENERGY = 100;
-const ENERGY_DRAIN_RATE = 0.7;   // Turbo açıkken ne kadar hızlı azalacak
-const ENERGY_GAIN_PER_HEART = 10; // Kalp başına kazanılan enerji (biraz artırdım çabuk dolsun)
-const TURBO_SCORE_MULTIPLIER = 2; // Puanın kaçla çarpılacağı
-const MIN_ENERGY_TO_START = 100;   // Turboyu açmak için en az ne kadar enerji lazım   
+const ENERGY_DRAIN_RATE = 0.7;   
+const ENERGY_GAIN_PER_HEART = 10; 
+const TURBO_SCORE_MULTIPLIER = 2; 
+const MIN_ENERGY_TO_START = 100;    
 
 // --- ZORLUK AYARLARI ---
-const BASE_SPEED = 0.5;      // Başlangıç düşme hızı (biraz artırıldı)
-const MAX_SPEED = 8.0;      // Maksimum hız sınırı
-const DIFFICULTY_CURVE = 0.5; // Zorluk eğrisi çarpanı
-let waveOffset = 0;          // Dalgalanma için zaman sayacı
+const BASE_SPEED = 0.6;      
+const MAX_SPEED = 10.0;      
+const DIFFICULTY_CURVE = 0.6; 
+let waveOffset = 0;        
 
 // Oyun Alanı Sınırı
 const MAX_GAME_WIDTH = 400;
@@ -76,7 +76,7 @@ const MAX_GAME_WIDTH = 400;
 let score = 0;
 let hearts = [];
 let particles = [];
-let gameState = 'playing'; // 'playing', 'gameOver', 'milestone', 'paused', 'tutorial'
+let gameState = 'playing'; 
 let nextMilestoneScore = 10;
 let giantHeart = { active: false, scale: 0, opacity: 0 };
 let animationFrameId;
@@ -95,7 +95,7 @@ let iceEffectActive = false;
 let iceTimer = 0;
 let rainbowEffectActive = false;
 let rainbowTimer = 0;
-let nextLetterScoreTarget = 200; // Mektup her 200 puanda
+let nextLetterScoreTarget = 200; 
 
 // --- SİNEMATİK MOD DEĞİŞKENLERİ ---
 let celebrationState = 'none';
@@ -129,85 +129,63 @@ function resizeCanvas() {
     createVine();
 }
 
-// --- script.js İÇİNE YAPIŞTIRILACAK (Eskisinin yerine) ---
 
 function createFloatingHearts() {
     const container = document.querySelector('.hearts-background');
     if (!container) return;
 
-    // Önceki içeriği temizle
     container.innerHTML = '';
 
-    // İŞTE BURASI: Harfleri 'MF' olarak yan yana koyduk!
-    // Aralara kalp emojileri de serpiştirdik.
     const symbols = ['MF', 'MF', '❤', 'MF', '♡', 'MF', '💕'];
     
-    // Ekranda aynı anda kaç tane süzülsün?
     const MAX_PARTICLES = 45; 
     let particleCount = 0;
 
     function spawnParticle() {
-        // Sekme arkadaysa üretimi durdur (Bilgisayarı yormasın)
         if (document.hidden) return;
 
         const el = document.createElement('div');
         el.classList.add('floating-item');
 
-        // Listeden rastgele birini seç: Ya 'MF' gelecek ya da Kalp
+       
         el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
 
         // --- RASTGELE GÖRÜNÜM AYARLARI ---
         
-        // Soldan sağa rastgele bir konum (%0 - %100 arası)
         const leftPos = Math.random() * 100;
-        
-        // Boyut: Bazıları küçük (arkada gibi), bazıları büyük (önde gibi)
-        const size = Math.random() * 30 + 15; // 15px ile 45px arası
-        
-        // Bulanıklık (Blur): Küçükler biraz bulanık olsun ki derinlik hissi versin
+        const size = Math.random() * 30 + 15; 
         const blurAmount = (45 - size) / 10; 
-        
-        // Hız: Küçükler yavaş, büyükler hızlı çıksın
-        const duration = Math.random() * 10 + 12; // 12 ile 22 saniye arası sürsün
-        
-        // Şeffaflık
+        const duration = Math.random() * 10 + 12; 
         const opacity = Math.random() * 0.6 + 0.2;
 
-        // Hafif dönme ve sağa sola sallanma miktarı
-        const rotation = (Math.random() - 0.5) * 60; // -30 ile +30 derece arası eğim
-        const sway = (Math.random() - 0.5) * 80;     // Sağa sola kayma payı
+        const rotation = (Math.random() - 0.5) * 60;
+        const sway = (Math.random() - 0.5) * 80;  
 
-        // Bu özellikleri elemente uygula
         el.style.left = `${leftPos}%`;
         el.style.fontSize = `${size}px`;
-        el.style.filter = `blur(${blurAmount}px)`; // Bulanıklık uygula
+        el.style.filter = `blur(${blurAmount}px)`; 
         el.style.animation = `floatUp ${duration}s linear forwards`;
-        
-        // CSS'e değişkenleri gönderiyoruz
+   
         el.style.setProperty('--rotation', `${rotation}deg`);
         el.style.setProperty('--sway', `${sway}px`);
         el.style.setProperty('--item-opacity', opacity);
 
-        // Renkler: Beyaz, Tatlı Pembe, Açık Mavi tonları
         const colors = ['#ffffff', '#ffcad4', '#e2f0cb', '#c6edfe'];
         el.style.color = colors[Math.floor(Math.random() * colors.length)];
 
         container.appendChild(el);
         particleCount++;
 
-        // Animasyon bitince sil (Çöp birikmesin)
         setTimeout(() => {
             el.remove();
             particleCount--;
         }, duration * 1000);
     }
 
-    // Başlangıçta ekran boş kalmasın, hemen 15 tane üretelim
     for(let i=0; i<15; i++) {
         setTimeout(spawnParticle, i * 400);
     }
 
-    // Sürekli üretim yap (Saniyede 2-3 tane yeni gönder)
     setInterval(() => {
         if (particleCount < MAX_PARTICLES) {
             spawnParticle();
@@ -271,20 +249,17 @@ function drawHeart3D(x, y, size) {
 }
 
 function updateEnergyBar() {
-    // Enerjiyi 0 ile 100 arasında tut
+
     turboEnergy = Math.max(0, Math.min(turboEnergy, MAX_TURBO_ENERGY));
 
-    // Barın doluluk oranını güncelle
     if (energyBarFill) {
         energyBarFill.style.width = `${turboEnergy}%`;
     }
 
-    // Enerji bittiyse turboyu kapat
     if (isTurbo && turboEnergy <= 0) {
         toggleTurbo(false);
     }
 
-    // Enerji yoksa butonu sönük yap
     if (!isTurbo && turboEnergy < MIN_ENERGY_TO_START) {
         turboBtn.classList.add('disabled');
     } else {
@@ -293,21 +268,17 @@ function updateEnergyBar() {
 }
 
 function toggleTurbo(forceState = null) {
-    // Eğer zorla bir durum verilmediyse, mevcut durumun tersini yap (Açsa kapat, kapalıysa aç)
     const newState = forceState !== null ? forceState : !isTurbo;
 
     if (newState === true) {
-        // Açmaya çalışıyor: Enerji var mı?
         if (turboEnergy >= MIN_ENERGY_TO_START) {
             isTurbo = true;
             turboBtn.classList.add('active');
-            if (navigator.vibrate) navigator.vibrate(200); // Titreşim
+            if (navigator.vibrate) navigator.vibrate(200); 
         } else {
-            // Enerji yoksa titretme (Hata hissi)
             if (navigator.vibrate) navigator.vibrate(50);
         }
     } else {
-        // Kapat
         isTurbo = false;
         turboBtn.classList.remove('active');
     }
@@ -380,12 +351,12 @@ function Particle(x, y) {
 // --- HEART SINIFI ---
 function Heart() {
     this.size = Math.random() * 25 + 15;
-    if (this.type === 'letter') this.size = 35; // Mektup özel boyutu
+    if (this.type === 'letter') this.size = 35; 
 
     const actualGameWidth = Math.min(canvas.width, MAX_GAME_WIDTH);
     const startX = (canvas.width - actualGameWidth) / 2;
 
-    const padding = this.size / 1.5; // Güvenli alan
+    const padding = this.size / 1.5; 
     const minX = startX + padding;
     const maxX = (startX + actualGameWidth) - padding;
 
@@ -417,17 +388,14 @@ function Heart() {
     // --- HIZ MANTIĞI ---
     let typeSpeedMultiplier = 1.0;
 
-    // Kötü kalpler (Siyah/Kırık) daha hızlı düşsün (Panik etkisi!)
     if (this.type === 'black' || this.type === 'broken') {
         typeSpeedMultiplier = 1.1;
     }
-    // Mektup biraz daha yavaş süzülsün, yakalaması kolay olsun
     else if (this.type === 'letter') {
         typeSpeedMultiplier = 0.6;
     }
 
     // Formül: (Rastgele Taban Hız + Minimum Hız) * Genel Zorluk * Kalp Türü Çarpanı
-    // speedModifier oyunun genel zorluk seviyesidir.
     this.speed = (Math.random() * 1.1 + BASE_SPEED) * speedModifier * typeSpeedMultiplier;
 
     if (this.type === 'gold') this.color = '#ffd700';
@@ -447,11 +415,9 @@ function Heart() {
 
         if (isTurbo) {
             currentSpeed *= 2.5;
-            // Turbo aktifken kalbin etrafında aşk ateşi parlaması yapalım
             ctx.shadowColor = '#ff1c45';
             ctx.shadowBlur = 15;
         } else {
-            // Normal hızda parlama yok (Performans için)
             if (!iceEffectActive) ctx.shadowBlur = 0;
         }
 
@@ -464,23 +430,18 @@ function Heart() {
             drawHeartSimple(this.x, this.y, this.size, `hsl(${hue}, 100%, 60%)`);
         }
         else if (this.type === 'letter') {
-            // MEKTUP GÖRÜNÜMÜ: Beyaz Dikdörtgen + Kırmızı Kalp
             ctx.save();
             ctx.translate(this.x, this.y);
 
-            // 1. Beyaz Dikdörtgen (Zarf Gövdesi)
             ctx.fillStyle = '#ffffff';
             ctx.shadowBlur = 10;
             ctx.shadowColor = 'gold';
 
-            // Dikdörtgen boyutları
             const rectW = this.size * 1.4;
             const rectH = this.size * 1.0;
 
-            // Merkezi ortalamak için
             ctx.fillRect(-rectW / 2, -rectH / 2, rectW, rectH);
 
-            // 2. Kırmızı Kalp (Tam Ortasına)
             drawHeartSimple(0, 0, this.size * 0.55, '#ff0000');
 
             ctx.restore();
@@ -578,10 +539,8 @@ function updateHighScoreDisplay(highscores) {
 function syncScoreToFirebase() {
 
     if (highscoresRef && currentPlayerName) {
-        // EĞER mevcut oyun puanı, kayıtlı rekorundan büyükse Firebase'e yaz
         if (score > currentHighScore) {
             highscoresRef.child(currentPlayerName).set(score);
-            // Yerel rekoru da hemen güncelle ki bir sonraki puan kontrolünde doğru kıyaslama yapsın
             currentHighScore = score;
         }
     }
@@ -596,24 +555,15 @@ function setGameOver() {
 
 // --- OYUN DÖNGÜSÜ ---
 function calculateDifficulty() {
-    // 1. HIZ HESABI: Logaritmik artış + Sinüs Dalgası
-    // Skor arttıkça hız artar ama sonsuza gitmez.
-    // Math.sin(waveOffset) sayesinde hız bazen yavaşlar bazen aniden hızlanır.
-
     let baseDifficulty = Math.log(score + 5) * DIFFICULTY_CURVE;
-    let waveEffect = Math.sin(Date.now() / 2000) * 0.5; // Her 2 saniyede bir hafif dalgalanma
+    let waveEffect = Math.sin(Date.now() / 2000) * 0.5; 
 
     speedModifier = 1 + (baseDifficulty * 0.8) + (score > 50 ? waveEffect : 0);
 
-    // Hızı limitle (Oyun oynanmaz hale gelmesin)
     if (speedModifier > MAX_SPEED) speedModifier = MAX_SPEED;
 
-    // 2. SPAWN RATE (Kalp Yoğunluğu) HESABI
-    // Skor arttıkça kalpler daha sık düşmeli (Değer küçüldükçe sıklaşır)
-    // Başlangıç 0.021 -> Zorlaştıkça 0.050'ye kadar çıkar
-
     let densityCurve = 0.021 + (Math.log(score + 1) * 0.005);
-    currentSpawnRate = Math.min(densityCurve, 0.06); // 0.06 tavan sınır
+    currentSpawnRate = Math.min(densityCurve, 0.06); 
 }
 
 
@@ -635,7 +585,7 @@ function gameLoop() {
     stars.forEach(s => { s.update(); s.draw(); });
     drawConstellations();
 
-    // GERÇEKÇİ GÖKKUŞAĞI
+    // GÖKKUŞAĞI
     if (rainbowEffectActive) {
         if (Date.now() - rainbowTimer > 2000) {
             rainbowEffectActive = false;
@@ -674,11 +624,10 @@ function gameLoop() {
         if (gameState === 'playing') {
             calculateDifficulty();
             if (isTurbo) {
-                turboEnergy -= ENERGY_DRAIN_RATE; // Enerji harca
+                turboEnergy -= ENERGY_DRAIN_RATE; 
                 updateEnergyBar();
-                currentSpawnRate = 0.13; // ÇILGIN MOD: Kalp yağmuru (0.021'den 0.15'e çıktı)
+                currentSpawnRate = 0.13; 
             } else {
-                // Turbo kapalıysa normal hız (Skora göre değişen hız)
                 currentSpawnRate = baseSpawnRate * spawnRateModifier;
             }
         }
@@ -763,9 +712,8 @@ function handleInteraction(event) {
             let multiplier = 1;
 
             if (isTurbo) {
-                multiplier = TURBO_SCORE_MULTIPLIER; // 5 Kat Puan!
+                multiplier = TURBO_SCORE_MULTIPLIER; 
             } else {
-                // Turbo kapalıysa enerji kazan
                 if (h.type !== 'black' && h.type !== 'broken') {
                     turboEnergy += ENERGY_GAIN_PER_HEART;
                     updateEnergyBar();
@@ -875,8 +823,8 @@ function init() {
         if (gameState === 'playing') {
             gameState = 'paused';
             pauseOverlay.classList.add('active');
-            canvas.classList.add('blur'); // Mevcut CSS'indeki blur'u kullanır
-            backgroundMusic.pause(); // İstersen müzik devam edebilir, silebilirsin
+            canvas.classList.add('blur');
+            backgroundMusic.pause(); 
         }
     });
 
@@ -889,20 +837,15 @@ function init() {
     });
 
     turboBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Arkadaki oyuna tıklamayı engelle
-        toggleTurbo();       // Aç/Kapa yap
+        e.stopPropagation(); 
+        toggleTurbo();       
     });
 
-    // Mobilde hızlı tepki için (Opsiyonel ama önerilir)
     turboBtn.addEventListener('touchstart', (e) => {
         e.stopPropagation();
-        // Click zaten tetikleneceği için buraya e.preventDefault() koyarsan
-        // click çalışmaz, o yüzden manuel toggle yapıp preventDefault diyebilirsin
-        // veya sadece click bırakabilirsin. En garantisi clicktir.
     }, { passive: false });
 }
 
-// --- SİNEMATİK EFEKTLER (Aynı) ---
 function drawSmokeShape(ctx, x, y, size, color, text = null) {
     ctx.save(); ctx.translate(x, y); ctx.globalAlpha = color.a; ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
     if (text) {
@@ -960,4 +903,5 @@ function updateAndDrawCelebration() {
         if (celebrationState === 'heart_exploding' && activeParticlesCount === 0) { celebrationState = 'none'; gameState = 'playing'; hasCelebrated = true; blackScreenOpacity = 0; }
     }
 }
+
 init();
