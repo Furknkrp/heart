@@ -58,15 +58,15 @@ const energyBarFill = document.getElementById('energyBarFill');
 // Turbo Sistemi Ayarları
 let turboEnergy = 0;
 const MAX_TURBO_ENERGY = 100;
-const ENERGY_DRAIN_RATE = 0.7;   
+const ENERGY_DRAIN_RATE = 0.5;   
 const ENERGY_GAIN_PER_HEART = 10; 
 const TURBO_SCORE_MULTIPLIER = 2; 
 const MIN_ENERGY_TO_START = 100;    
 
 // --- ZORLUK AYARLARI ---
-const BASE_SPEED = 0.6;      
-const MAX_SPEED = 10.0;      
-const DIFFICULTY_CURVE = 0.6; 
+const BASE_SPEED = 0.5;      
+const MAX_SPEED = 8.0;      
+const DIFFICULTY_CURVE = 0.5; 
 let waveOffset = 0;        
 
 // Oyun Alanı Sınırı
@@ -905,3 +905,4 @@ function updateAndDrawCelebration() {
 }
 
 init();
+
